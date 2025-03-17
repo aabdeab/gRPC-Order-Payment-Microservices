@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package com.ProductOrder;  // Same package name
+
+
+option java_multiple_files = true;  // Important pour séparer les classes générées
+option java_package = "com.ProductOrder";  // Assure que les classes vont dans ce package
+
+service ProductService {
+  rpc GetProductById(ProductRequest) returns (ProductResponse);
+}
+
+message ProductRequest {
+  int64 productId = 1;
+}
+
+message ProductResponse {
+  int64 productId = 1;
+  string name = 2;
+  int32 stock = 3;
+  double price = 4;
+}
