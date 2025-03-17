@@ -1,2 +1,8 @@
 rootProject.name = 'ProductOrder'
+include 'microservices'
+include 'microservices'
+include 'microservices:orderService'
+include 'microservices:ProductService'
+include 'API'
+include 'proto-api'
 
