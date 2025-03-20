@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
@@ -8,10 +9,11 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/API" />
+            <option value="$PROJECT_DIR$/Utils" />
             <option value="$PROJECT_DIR$/microservices" />
             <option value="$PROJECT_DIR$/microservices/ProductService" />
             <option value="$PROJECT_DIR$/microservices/orderService" />
+            <option value="$PROJECT_DIR$/proto-api" />
           </set>
         </option>
       </GradleProjectSettings>

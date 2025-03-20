@@ -11,11 +11,10 @@ public class GrpcOrderService extends OrderServiceGrpc.OrderServiceImplBase {
 
     @Override
     public void createOrder(OrderRequest request, StreamObserver<OrderResponse> responseObserver) {
-        // Simulation d'une commande
         OrderResponse response = OrderResponse.newBuilder()
-                .setOrderId(System.currentTimeMillis())  // Simule un ID unique
-                .setStatus("CONFIRMED")
-                .setTotalPrice(request.getQuantity() * 10.0)  // Exemple : 10.0€ par produit
+                .setOrderId(System.currentTimeMillis())
+                .setStatus("PENDING")
+                .setTotalPrice(request.getQuantity())
                 .build();
 
         responseObserver.onNext(response);
