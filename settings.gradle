@@ -3,4 +3,6 @@ include 'microservices:orderService'
 include 'microservices:ProductService'
 include 'proto-api'
 include 'Utils'
+include 'microservices:NotificationService'
+findProject(':microservices:NotificationService')?.name = 'NotificationService'
 

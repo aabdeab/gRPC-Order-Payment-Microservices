@@ -14,14 +14,14 @@ repositories {
 dependencies {
     implementation project(':Utils')
     implementation project(':proto-api')
+    //MongoDB
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'net.devh:grpc-client-spring-boot-starter:2.15.0.RELEASE'
     implementation 'net.devh:grpc-server-spring-boot-starter:2.15.0.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.grpc:grpc-netty-shaded:1.58.0'
     implementation 'org.springframework.kafka:spring-kafka'
-    runtimeOnly 'com.h2database:h2'
 }
 
 test {

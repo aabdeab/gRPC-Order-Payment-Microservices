@@ -1,5 +1,8 @@
-package com.ProductOrder;
+package com.ProductOrder.Client;
 
+import com.ProductOrder.OrderRequest;
+import com.ProductOrder.OrderResponse;
+import com.ProductOrder.OrderServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
