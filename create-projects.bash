@@ -9,7 +9,7 @@ echo "Creating ProductOrder project structure..."
 mkdir -p ProductOrder
 cd ProductOrder
 
-# Create root directories
+# Create root directories.
 mkdir -p assets
 mkdir -p src
 
