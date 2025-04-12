@@ -44,8 +44,12 @@ ProductOrder/
 │   ├── Models and DTOs
 │   ├── Events
 │   └── Global error handling
+├── create-projects.bash
 ├── build.gradle
 ├── settings.gradle
+├── gradlew
+├── .gitignore
+├── gradlew
 └── docker-compose.yml
 ```
 
