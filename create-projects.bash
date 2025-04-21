@@ -103,3 +103,8 @@ touch docker-compose.yml
 
 echo "ProductOrder project skeleton structure created successfully!"
 echo "Navigate to the ProductOrder directory to begin developing your microservices."
+
+
+# From the project root directory
+./gradlew :microservices:orderService:bootRun
+./gradlew :microservices:ProductService:bootRun

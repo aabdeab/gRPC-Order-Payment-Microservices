@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 public class Order {
     @Id
     private String orderId;  // MongoDB uses String as the default type for ObjectId
-
     private Long productId;
     private String status;
     private ProductDTO product; // Single product

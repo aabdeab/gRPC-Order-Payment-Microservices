@@ -68,6 +68,52 @@ services:
     networks:
       - product-order-network
 
+  product-service:
+    build:
+      context: ./microservices/ProductService
+      dockerfile: Dockerfile
+    container_name: product-service
+    ports:
+      - "8080:8080"
+      - "9091:9091"  # Exposing gRPC port
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/productorder
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      GRPC_SERVER_PORT: 9091
+    depends_on:
+      - postgres
+      - kafka
+    networks:
+      - product-order-network
+
+  order-service:
+    build:
+      context: ./microservices/orderService
+      dockerfile: Dockerfile
+    container_name: order-service
+    ports:
+      - "8081:8081"
+      - "9095:9095"  # Exposing gRPC port
+    environment:
+      SERVER_PORT: 8081
+      SPRING_DATA_MONGODB_HOST: mongodb
+      SPRING_DATA_MONGODB_PORT: 27017
+      SPRING_DATA_MONGODB_DATABASE: orderservice
+      SPRING_DATA_MONGODB_USERNAME: root
+      SPRING_DATA_MONGODB_PASSWORD: password
+      SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      GRPC_SERVER_PORT: 9095
+    depends_on:
+      - mongodb
+      - kafka
+      - product-service
+    networks:
+      - product-order-network
+
 networks:
   product-order-network:
     driver: bridge
