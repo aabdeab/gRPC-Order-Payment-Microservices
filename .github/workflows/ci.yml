@@ -33,8 +33,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      # Fixed cache action - updated to v3 which has better reliability
       - name: Cache Docker layers
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -62,9 +63,6 @@ jobs:
           
           # Check if Order Service is up
           curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:8081/actuator/health || echo "Order Service health check failed"
-          
-          # Optional: Check Kafka UI
-          curl --retry 5 --retry-delay 3 --retry-connrefused http://localhost:9000 || echo "Kafdrop may not be ready yet"
 
       # Stop services after testing
       - name: Stop services
