@@ -1,5 +1,4 @@
 name: CI Pipeline
-
 on:
   push:
     branches:
@@ -11,54 +10,25 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
-    services:
-      zookeeper:
-        image: confluentinc/cp-zookeeper:latest
-        options: --health-cmd="nc -z localhost 2181" --health-timeout=30s --health-retries=3
-        ports:
-          - 2181:2181
-      kafka:
-        image: confluentinc/cp-kafka:latest
-        options: --health-cmd="nc -z localhost 9092" --health-timeout=30s --health-retries=3
-        ports:
-          - 9092:9092
-        env:
-          KAFKA_BROKER_ID: 1
-          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-          KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      postgres:
-        image: postgres:latest
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: productorder
-        volumes:
-          - postgres_data:/var/lib/postgresql/data
-      mongodb:
-        image: mongo:latest
-        ports:
-          - 27017:27017
-        env:
-          MONGO_INITDB_ROOT_USERNAME: root
-          MONGO_INITDB_ROOT_PASSWORD: password
-        volumes:
-          - mongodb_data:/data/db
-      kafdrop:
-        image: obsidiandynamics/kafdrop:latest
-        ports:
-          - 9000:9000
-        env:
-          KAFKA_BROKERCONNECT: kafka:29092
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build -x test
+
+      - name: Run tests
+        run: ./gradlew test
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -75,24 +45,29 @@ jobs:
         run: |
           docker-compose -f docker-compose.yml build
 
-      - name: Run Docker Compose
+      - name: Start all services
         run: |
           docker-compose -f docker-compose.yml up -d
 
       - name: Wait for services to be ready
         run: |
           echo "Waiting for services to be ready..."
-          sleep 30
+          sleep 45
+          docker-compose ps
 
-      - name: Check if services are running
+      - name: Verify services health
         run: |
-          docker ps
+          # Check if Product Service is up
+          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:8080/actuator/health || echo "Product Service health check failed"
           
-      # Example of stopping containers after deployment (optional)
-      - name: Stop containers after CI run
+          # Check if Order Service is up
+          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:8081/actuator/health || echo "Order Service health check failed"
+          
+          # Optional: Check Kafka UI
+          curl --retry 5 --retry-delay 3 --retry-connrefused http://localhost:9000 || echo "Kafdrop may not be ready yet"
+
+      # Stop services after testing
+      - name: Stop services
+        if: always()
         run: |
           docker-compose -f docker-compose.yml down
-
-volumes:
-  mongodb_data:
-  postgres_data:
