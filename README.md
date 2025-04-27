@@ -122,17 +122,12 @@ git clone https://github.com/your-username/product-order-system.git
 cd ProductOrder
 ```
 
-2. Start the infrastructure (MongoDB, PostgreSQL, Kafka, Zookeeper, and Kafdrop) using Docker Compose:
+2. Start the services  along with the infrastructure (MongoDB, PostgreSQL, Kafka, Zookeeper, and Kafdrop) using Docker Compose:
 ```bash
 docker-compose up -d
 ```
 
-3. Start each service individually using Gradle:
-```bash
-# From the project root directory
-./gradlew :microservices:orderService:bootRun
-./gradlew :microservices:ProductService:bootRun
-```
+
 
 ### 🔍 Verifying the Setup
 
