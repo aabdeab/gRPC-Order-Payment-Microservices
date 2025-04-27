@@ -33,7 +33,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Fixed cache action - updated to v3 which has better reliability
+      # Fixed cache action - updated to v3
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
@@ -44,17 +44,17 @@ jobs:
 
       - name: Build Docker images
         run: |
-          docker-compose -f docker-compose.yml build
+          docker compose -f docker-compose.yml build
 
       - name: Start all services
         run: |
-          docker-compose -f docker-compose.yml up -d
+          docker compose -f docker-compose.yml up -d
 
       - name: Wait for services to be ready
         run: |
           echo "Waiting for services to be ready..."
           sleep 45
-          docker-compose ps
+          docker compose ps
 
       - name: Verify services health
         run: |
@@ -68,4 +68,4 @@ jobs:
       - name: Stop services
         if: always()
         run: |
-          docker-compose -f docker-compose.yml down
+          docker compose -f docker-compose.yml down
