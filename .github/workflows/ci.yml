@@ -6,9 +6,6 @@ on:
   pull_request:
     branches:
       - main
-  schedule:
-    # Scheduled run for tests only (UTC)
-    - cron: '*/5 * * * *'
 
 jobs:
   build-and-deploy:
