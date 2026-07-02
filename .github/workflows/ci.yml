@@ -1,4 +1,5 @@
-name: CI Pipeline
+name: Run tests testfoundry
+
 on:
   push:
     branches:
@@ -9,22 +10,18 @@ on:
 
 jobs:
   build-and-deploy:
-    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Fixed Java setup with proper cache configuration
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '17'
-          # Remove the built-in Gradle cache option as it's causing issues
-          # We'll handle Gradle caching separately
 
-      # Add explicit Gradle caching
       - name: Setup Gradle cache
         uses: actions/cache@v3
         with:
@@ -47,7 +44,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Docker layer caching
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
@@ -57,12 +53,10 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - name: Build Docker images
-        run: |
-          docker compose -f docker-compose.yml build
+        run: docker compose -f docker-compose.yml build
 
       - name: Start all services
-        run: |
-          docker compose -f docker-compose.yml up -d
+        run: docker compose -f docker-compose.yml up -d
 
       - name: Wait for services to be ready
         run: |
@@ -72,43 +66,9 @@ jobs:
 
       - name: Verify services health
         run: |
-          # Check if Product Service is up
           curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:8080/actuator/health || echo "Product Service health check failed"
-          
-          # Check if Order Service is up
           curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:8081/actuator/health || echo "Order Service health check failed"
 
-      # Stop services after testing
       - name: Stop services
         if: always()
-        run: |
-          docker compose -f docker-compose.yml down
-
-  tests-scheduled:
-    if: github.event_name != 'schedule'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Setup Gradle cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
-
-      - name: Run tests (scheduled)
-        run: ./gradlew test
+        run: docker compose -f docker-compose.yml down
